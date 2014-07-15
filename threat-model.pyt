@@ -59,7 +59,39 @@ class ThreatModel(object):
         output_dir.direction = 'Output'
         output_dir.datatype = u'Folder'
 
-        return [habitats_dir, threats_dir, matrix_file, output_dir]
+	# Boolean: create by_threat layers
+	by_threat=arcpy.Parameter()
+	by_threat.name=u'By Threat'
+	by_threat.displayName=u'Calculate impacts from individual threats'
+	by_threat.parameterType='Optional'
+	by_threat.direction='Input'
+	by_threat.datatype=u'Boolean'
+
+	# Boolean: create by_habitat layers
+	by_habitat=arcpy.Parameter()
+	by_habitat.name=u'By Habitat'
+	by_habitat.displayName=u'Calculate impacts on individual habitats'
+	by_habitat.parameterType='Optional'
+	by_habitat.direction='Input'
+	by_habitat.datatype=u'Boolean'
+	
+	# Boolean: average by number of habitats
+	avg_num_habitats=arcpy.Parameter()
+	avg_num_habitats.name=u'Average Num Habitats'
+	avg_num_habitats.displayName=u'Average impacts by number of habitats'
+	avg_num_habitats.parameterType='Optional'
+	avg_num_habitats.direction='Input'
+	avg_num_habitats.datatype=u'Boolean'
+	
+	# Boolean: treat NoData as zero
+	set_null_zero=arcpy.Parameter()
+	set_null_zero.name=u'Set Null Zero'
+	set_null_zero.displayName=u'Treat NoData values as zeros'
+	set_null_zero.parameterType='Optional'
+	set_null_zero.direction='Input'
+	set_null_zero.datatype=u'Boolean'
+
+        return [habitats_dir, threats_dir, matrix_file, output_dir, by_threat, by_habitat, avg_num_habitats, set_null_zero]
 
     def isLicensed(self):
         return True
@@ -81,8 +113,13 @@ class ThreatModel(object):
             threats_dir = parameters[1].valueAsText
             matrix_file = parameters[2].valueAsText
             output_dir = parameters[3].valueAsText
+            by_threat = parameters[4].valueAsText
+            by_habitat = parameters[5].valueAsText
+            avg_num_habitats = parameters[6].valueAsText
+            set_null_zero = parameters[7].valueAsText
         except:
             messages.AddErrorMessage(arcpy.GetMessages(2))
-            messages.AddErrorMessage("Usage: threat_model_arcgis.py habitats_dir threats_dir matrix.csv output_dir")
+            messages.AddErrorMessage("Usage: threat_model_arcgis.py habitats_dir threats_dir matrix.csv output_dir by_threat by_habitat avg_num_habitats set_null_zero")
             sys.exit(1)
-        threat_model_arcgis.main(habitats_dir, threats_dir, matrix_file, output_dir)
+	reload(threat_model_arcgis)
+        threat_model_arcgis.main(habitats_dir, threats_dir, matrix_file, output_dir, by_threat, by_habitat, avg_num_habitats, set_null_zero)
