@@ -107,7 +107,8 @@ class ThreatModel(object):
              return validator(parameters).updateMessages()
 
     def execute(self, parameters, messages):
-        from code import threat_model_arcgis
+        sys.path.insert(0, '%s/scripts' % local_path)
+        import threat_model_arcgis
         try:
             habitats_dir = parameters[0].valueAsText
             threats_dir = parameters[1].valueAsText
@@ -121,5 +122,5 @@ class ThreatModel(object):
             messages.AddErrorMessage(arcpy.GetMessages(2))
             messages.AddErrorMessage("Usage: threat_model_arcgis.py habitats_dir threats_dir matrix.csv output_dir by_threat by_habitat avg_num_habitats set_null_zero")
             sys.exit(1)
-	reload(threat_model_arcgis)
+        reload(threat_model_arcgis)
         threat_model_arcgis.main(habitats_dir, threats_dir, matrix_file, output_dir, by_threat, by_habitat, avg_num_habitats, set_null_zero)
